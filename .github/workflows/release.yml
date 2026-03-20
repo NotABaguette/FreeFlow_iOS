@@ -1,0 +1,63 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: macos-14
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_15.4.app/Contents/Developer
+
+      - name: Run Tests
+        run: swift test --parallel
+
+      - name: Build Release (macOS)
+        run: swift build -c release
+
+      - name: Build iOS Framework
+        run: |
+          xcodebuild archive \
+            -scheme FreeFlowCore \
+            -destination 'generic/platform=iOS Simulator' \
+            -archivePath build/FreeFlowCore-iphonesimulator.xcarchive \
+            -skipPackagePluginValidation \
+            SKIP_INSTALL=NO \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+            || true
+
+      - name: Package release
+        run: |
+          VERSION=${GITHUB_REF_NAME}
+          mkdir -p release
+
+          # macOS binary
+          if [ -d ".build/release" ]; then
+            tar czf "release/FreeFlowCore-macos-${VERSION}.tar.gz" -C .build/release .
+          fi
+
+          # iOS archive
+          if [ -d "build" ]; then
+            tar czf "release/FreeFlowCore-ios-${VERSION}.tar.gz" -C build .
+          fi
+
+          # Source
+          git archive --format=tar.gz --prefix=FreeFlow-iOS-${VERSION}/ HEAD > "release/source-${VERSION}.tar.gz"
+
+          # Checksums
+          cd release && shasum -a 256 * > checksums.txt
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          generate_release_notes: true
+          draft: false
