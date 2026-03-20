@@ -12,7 +12,7 @@ public enum E2ECrypto {
         let derived = shared.hkdfDerivedSymmetricKey(
             using: SHA256.self,
             salt: Data(),
-            sharedInfo: Data("freeflow-e2e-v1".utf8),
+            info: Data("freeflow-e2e-v1".utf8),
             outputByteCount: 32
         )
         return derived.withUnsafeBytes { Array($0) }

@@ -68,7 +68,7 @@ public class DomainManager {
         let expanded = HKDF<SHA256>.deriveKey(
             inputKeyMaterial: secret,
             salt: Data(),
-            sharedInfo: Data("freeflow-epoch-expand".utf8),
+            info: Data("freeflow-epoch-expand".utf8),
             outputByteCount: 32
         )
         epochSeed = expanded.withUnsafeBytes { Array($0) }

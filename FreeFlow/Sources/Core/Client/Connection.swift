@@ -48,7 +48,7 @@ public class FFConnection: ObservableObject {
         state = .connecting
         let ephemeral = KeyPair()
         let pubBytes = ephemeral.publicKeyBytes
-        let helloNonce = UInt16.random(in: 0..<65536)
+        let helloNonce = UInt16.random(in: 0...UInt16.max)
 
         // Send 4 chunks of public key
         for i in 0..<4 {
@@ -234,7 +234,7 @@ enum DNSPacket {
     static func buildQuery(name: String, type: DNSRecordType) -> [UInt8] {
         var packet = [UInt8]()
         // Transaction ID
-        let txid = UInt16.random(in: 0..<65536)
+        let txid = UInt16.random(in: 0...UInt16.max)
         packet.append(UInt8((txid >> 8) & 0xFF))
         packet.append(UInt8(txid & 0xFF))
         // Flags: standard query, recursion desired

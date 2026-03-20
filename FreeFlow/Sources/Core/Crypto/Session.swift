@@ -63,7 +63,7 @@ public class FFSession {
         let derived = sharedSecret.hkdfDerivedSymmetricKey(
             using: SHA256.self,
             salt: Data(),
-            sharedInfo: Data("freeflow-v2-session".utf8),
+            info: Data("freeflow-v2-session".utf8),
             outputByteCount: 32
         )
         return derived.withUnsafeBytes { Array($0) }
