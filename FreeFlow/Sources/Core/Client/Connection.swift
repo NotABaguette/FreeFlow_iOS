@@ -118,55 +118,24 @@ public class FFConnection: ObservableObject {
     // MARK: - REGISTER
 
     /// Register persistent identity with the session (§4.4).
-    /// Fragmented into 3 queries for proquint (each ≤20 bytes).
-    /// Single query for hex encoding (40 bytes = 2 labels).
-    /// Oracle computes fingerprint = SHA256(pubkey)[0:8] itself.
-    /// Client MUST verify returned fingerprint matches local computation.
+    /// Always sends as single frame (fragTotal=1) matching Go client.
+    /// The 40-byte frame (8 header + 32 pubkey) is split across
+    /// 2 proquint labels by the encoder — this is label-level splitting,
+    /// NOT protocol-level fragmentation.
+    /// Client MUST verify returned fingerprint.
+    /// Retries up to 3 times on failure.
     public func register() async throws {
         guard let sess = session else { throw FFError.noSession }
 
         let pubkey = identity.publicKey // 32 bytes
 
-        if encoding == .proquint {
-            // §4.4 Fragmented format: 3 queries, each ≤20 bytes
-            // Fragment 0: pubkey[0..11]  (12 bytes data, frame=20)
-            // Fragment 1: pubkey[12..23] (12 bytes data, frame=20)
-            // Fragment 2: pubkey[24..31] (8 bytes data, frame=16)
-            let chunks: [[UInt8]] = [
-                Array(pubkey[0..<12]),
-                Array(pubkey[12..<24]),
-                Array(pubkey[24..<32]),
-            ]
-
-            for (i, chunk) in chunks.enumerated() {
-                let seq = sess.nextSeqNo()
-                let token = sess.token(for: seq)
-
-                let frame = QueryPayload(
-                    command: 0x08,
-                    seqNo: UInt8(seq & 0xFF),
-                    fragIndex: UInt8(i),
-                    fragTotal: UInt8(chunks.count),
-                    sessionToken: token,
-                    data: chunk
-                ).toFrame()
-
-                onQuery?("REGISTER frag=\(i+1)/\(chunks.count) \(chunk.count)B", "sending \(frame.count)B frame...", transport)
-                let response = try await checkErrorResponse(try await queryOracle(payload: frame))
-
-                if i == chunks.count - 1 {
-                    verifyRegisterResponse(response)
-                }
-
-                if i < chunks.count - 1 {
-                    try await Task.sleep(nanoseconds: UInt64(optimalDelay * 1_000_000_000))
-                }
-            }
-        } else {
-            // Single-query format: 40 bytes (header=8 + pubkey=32)
+        var lastError: Error?
+        for attempt in 1...3 {
             let seq = sess.nextSeqNo()
             let token = sess.token(for: seq)
 
+            // Single frame, fragTotal=1 — matches Go client exactly
+            // Proquint encoder handles multi-label splitting (40 bytes = 2 labels)
             let frame = QueryPayload(
                 command: 0x08,
                 seqNo: UInt8(seq & 0xFF),
@@ -176,11 +145,26 @@ public class FFConnection: ObservableObject {
                 data: pubkey
             ).toFrame()
 
-            onQuery?("REGISTER single-query 40B", "sending...", transport)
-            let response = try await checkErrorResponse(try await queryOracle(payload: frame))
-            verifyRegisterResponse(response)
+            onQuery?("REGISTER attempt=\(attempt) frame=\(frame.count)B", "sending...", transport)
+
+            do {
+                let response = try await checkErrorResponse(try await queryOracle(payload: frame))
+                verifyRegisterResponse(response)
+                registered = true
+                return
+            } catch {
+                lastError = error
+                onQuery?("REGISTER attempt=\(attempt)", "failed: \(error.localizedDescription)", transport)
+                if attempt < 3 {
+                    try await Task.sleep(nanoseconds: UInt64(optimalDelay * 1_000_000_000))
+                }
+            }
         }
+        throw lastError ?? FFError.helloFailed("REGISTER failed after 3 attempts")
     }
+
+    /// Whether REGISTER has completed successfully
+    public var registered: Bool = false
 
     /// Verify Oracle-returned fingerprint matches local computation (§4.4)
     private func verifyRegisterResponse(_ response: [UInt8]) {
@@ -233,6 +217,7 @@ public class FFConnection: ObservableObject {
 
     public func sendMessage(_ text: String, to contact: Contact) async throws -> Int {
         guard let sess = session else { throw FFError.noSession }
+        guard registered else { throw FFError.helloFailed("Cannot send: REGISTER not completed. Identity not bound to session.") }
 
         let e2eKey = try E2ECrypto.deriveKey(myPrivate: identity.privateKey, theirPublic: contact.publicKey)
         let plaintext = [UInt8](text.utf8)
@@ -295,6 +280,7 @@ public class FFConnection: ObservableObject {
     /// Step 3: ACK (0x02) — mark delivered
     public func pollMessages() async throws -> (data: [UInt8], senderFP: [UInt8])? {
         guard let sess = session else { throw FFError.noSession }
+        guard registered else { throw FFError.helloFailed("Cannot poll: REGISTER not completed.") }
 
         // Step 1: CHECK
         try await Task.sleep(nanoseconds: UInt64(optimalDelay * 1_000_000_000))
