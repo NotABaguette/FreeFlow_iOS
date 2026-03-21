@@ -36,9 +36,14 @@ public class FFConnection: ObservableObject {
     // MARK: - PING
 
     public func ping() async throws -> Date {
-        // PING uses compact format + lexical encoding (stateless command)
-        // Go: BuildCompact(CmdPING) = [0x07]
-        let payload: [UInt8] = [Command.ping.rawValue]
+        // PING: full frame for proquint (needs ≥4 bytes = 2 words),
+        // compact for lexical encoding
+        let payload: [UInt8]
+        if encoding == .lexical {
+            payload = [Command.ping.rawValue]
+        } else {
+            payload = QueryPayload(command: Command.ping.rawValue).toFrame()
+        }
         onQuery?("PING cmd=0x07", "sending...", transport)
         let response = try await queryOracle(payload: payload)
         guard response.count >= 4 else { throw FFError.frameTooShort(response.count) }
@@ -145,8 +150,15 @@ public class FFConnection: ObservableObject {
     // MARK: - GET BULLETIN
 
     public func getBulletin(lastSeenID: UInt16 = 0) async throws -> [UInt8] {
-        // Go: BuildCompact(CmdGET_BULLETIN) — uses lexical encoding
-        let frame: [UInt8] = [Command.getBulletin.rawValue]
+        let frame: [UInt8]
+        if encoding == .lexical {
+            frame = [Command.getBulletin.rawValue]
+        } else {
+            frame = QueryPayload(
+                command: Command.getBulletin.rawValue,
+                data: [UInt8((lastSeenID >> 8) & 0xFF), UInt8(lastSeenID & 0xFF)]
+            ).toFrame()
+        }
 
         onQuery?("GET_BULLETIN lastID=\(lastSeenID)", "sending...", transport)
         let response = try await queryOracle(payload: frame)
@@ -310,8 +322,12 @@ public class FFConnection: ObservableObject {
         let seq = sess.nextSeqNo()
         let token = sess.token(for: seq)
 
-        // Go: BuildCompact(CmdDISCOVER) — lexical encoding
-        let payload: [UInt8] = [Command.discover.rawValue]
+        let payload: [UInt8]
+        if encoding == .lexical {
+            payload = [Command.discover.rawValue]
+        } else {
+            payload = QueryPayload(command: Command.discover.rawValue).toFrame()
+        }
 
         onQuery?("DISCOVER", "sending...", transport)
         let response = try await queryOracle(payload: payload)
