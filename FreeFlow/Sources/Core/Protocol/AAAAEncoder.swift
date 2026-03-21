@@ -30,8 +30,8 @@ public struct IPv6Prefix {
 public enum AAAAEncoder {
     public static let recordSize = 16
     public static let payloadPerRecord = 8
-    public static let maxRecords = 4
-    public static let maxPayload = maxRecords * payloadPerRecord  // 32 bytes
+    public static let maxRecords = 8
+    public static let maxPayload = maxRecords * payloadPerRecord  // 64 bytes
 
     /// Encode payload into 1-4 IPv6 addresses
     public static func encode(
