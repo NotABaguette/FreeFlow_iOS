@@ -1,0 +1,88 @@
+{
+    "id": "finance",
+    "category": "Financial data",
+    "templates": [
+        {
+            "separator": "-",
+            "slots": [
+                {"word_list": "currency", "bits": 8},
+                {"word_list": "metric", "bits": 7},
+                {"word_list": "region", "bits": 7}
+            ]
+        }
+    ],
+    "word_lists": {
+        "currency": [
+            "usd", "eur", "gbp", "jpy", "cny", "chf", "aud", "cad",
+            "nzd", "sek", "nok", "dkk", "sgd", "hkd", "krw", "twd",
+            "inr", "idr", "myr", "thb", "php", "vnd", "brl", "mxn",
+            "ars", "clp", "cop", "pen", "zar", "ngn", "egp", "aed",
+            "sar", "qar", "kwd", "bhd", "omr", "jod", "lbp", "try",
+            "ils", "pln", "czk", "huf", "ron", "bgn", "hrk", "rsd",
+            "isk", "rub", "uah", "kzt", "gel", "azn", "byn", "mdl",
+            "mkd", "all", "bam", "ghs", "kes", "tzs", "ugx", "rwf",
+            "etb", "mad", "tnd", "dzd", "lyd", "sdg", "sos", "djf",
+            "kmf", "mga", "mur", "scr", "mvr", "lkr", "bdt", "npr",
+            "pkr", "afn", "irr", "iqd", "syp", "yer", "khr", "lak",
+            "mmk", "mnt", "kpw", "fjd", "pgk", "wst", "top", "vuv",
+            "btc", "eth", "xrp", "ada", "sol", "dot", "bnb", "avax",
+            "matic", "link", "uni", "aave", "comp", "mkr", "snx", "crv",
+            "sushi", "yfi", "doge", "shib", "ltc", "bch", "xlm", "xmr",
+            "dash", "zcash", "eos", "trx", "algo", "atom", "near", "ftm",
+            "gold", "silvr", "plat", "pallad", "coppr", "iron", "steel", "zinc",
+            "tin", "lead", "nickel", "cobalt", "titan", "alum", "uran", "lithi",
+            "wheat", "corn", "rice", "soy", "sugar", "cocoa", "coffee", "cotton",
+            "lumber", "rubber", "wool", "silk", "palm", "olive", "beef", "pork",
+            "crude", "brent", "wti", "natgas", "diesel", "gasoln", "jet", "coal",
+            "solar2", "wind2", "hydro2", "bio", "nuke", "geothr", "tidal", "wave",
+            "sp500", "nasdaq", "dow", "ftse", "dax", "cac", "nikkei", "hangsn",
+            "kospi", "asx", "tsx", "ibex", "stoxx", "mib", "aex", "bel20",
+            "omx", "wig", "bux", "bovspn", "merval", "colcap", "ipsa", "biva",
+            "nifty", "sensex", "klci", "sti", "psei", "jkse", "set", "vnidx",
+            "tasi", "adx", "dfm", "qe", "msm", "bah", "kse", "cse",
+            "dse", "nse", "bse", "moex", "pfts", "kase", "ase", "bist",
+            "eqty", "bond2", "deriv", "swap", "fwd", "opt", "fut", "cfd",
+            "etf", "reit", "spac", "ipo", "dpo", "spo", "rights", "warnt",
+            "pref", "commn", "treas", "muni", "corp", "sov", "agency", "cdp",
+            "cds", "cdo", "clo", "mbs", "abs", "cmbs", "rmbs", "tba"
+        ],
+        "metric": [
+            "price", "bid", "ask", "open", "close", "high", "low", "last",
+            "mid", "vwap", "twap", "ohlc", "volume", "value", "change", "delta",
+            "gamma", "theta", "vega", "rho", "beta", "alpha", "sigma", "kappa",
+            "yield", "spread", "basis", "carry", "roll", "swap", "rate", "coupon",
+            "div", "eps", "pe", "pb", "ps", "pcf", "ev", "ebitd",
+            "margin", "roe", "roa", "roic", "roce", "fcf", "capex", "opex",
+            "rev", "cost", "profit", "loss", "debt", "equity", "asset", "cash",
+            "nav", "aum", "flow", "draw", "sharp", "sorti", "calmar", "treyn",
+            "var", "cvar", "max", "min", "mean", "median", "mode", "stdev",
+            "skew", "kurt", "corr", "covar", "rsq", "durtn", "convex", "pvbp",
+            "dv01", "cs01", "ir01", "fx01", "eq01", "cm01", "cr01", "th01",
+            "notl", "par", "face", "accrd", "clean", "dirty", "settle", "trade",
+            "impl", "real2", "hist", "fwd2", "spot", "strip", "curve", "surf",
+            "smile", "skew2", "term", "tenor", "matty", "expiry", "strike", "barr",
+            "knock", "touch", "range", "cap", "floor", "collar", "strad", "strngl",
+            "sprd2", "fly", "condor", "ratio", "combo", "hedge", "expo", "pnl"
+        ],
+        "region": [
+            "us", "uk", "eu", "jp", "cn", "kr", "au", "ca",
+            "nz", "sg", "hk", "tw", "in", "id", "my", "th",
+            "ph", "vn", "br", "mx", "ar", "cl", "co", "pe",
+            "za", "ng", "eg", "ae", "sa", "qa", "kw", "bh",
+            "om", "jo", "lb", "tr", "il", "pl", "cz", "hu",
+            "ro", "bg", "hr", "rs", "is", "ru", "ua", "kz",
+            "ge", "az", "by", "de", "fr", "it", "es", "pt",
+            "nl", "be", "at", "se", "no", "dk", "fi", "ie",
+            "ch", "lu", "mc", "li", "mt", "cy", "gr", "sk",
+            "si", "ee", "lv", "lt", "am", "md", "al", "ba",
+            "me", "mk", "xk", "apac", "emea", "latam", "mena", "asean",
+            "nafta", "brics", "g7", "g20", "oecd", "opec", "gcc", "eac",
+            "ecowa", "sadc", "comsa", "wafmu", "cemac", "uemoa", "bceao", "beac",
+            "nordic", "baltic", "iberia", "benelx", "dach", "cee", "see", "cis",
+            "levant", "gulf", "sahel", "horn", "maghrb", "carib", "andean", "merco",
+            "pacif", "atlntc", "indian", "arctic", "med", "black", "caspin", "global"
+        ]
+    },
+    "min_label": 8,
+    "max_label": 22
+}

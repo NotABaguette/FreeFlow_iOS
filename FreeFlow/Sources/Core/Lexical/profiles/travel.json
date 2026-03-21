@@ -1,0 +1,88 @@
+{
+    "id": "travel",
+    "category": "Travel booking",
+    "templates": [
+        {
+            "separator": "-",
+            "slots": [
+                {"word_list": "city", "bits": 8},
+                {"word_list": "service", "bits": 7},
+                {"word_list": "type", "bits": 7}
+            ]
+        }
+    ],
+    "word_lists": {
+        "city": [
+            "nyc", "london", "paris", "tokyo", "berlin", "madrid", "rome", "vienna",
+            "prague", "lisbon", "dublin", "oslo", "stock", "copen", "helsin", "zurich",
+            "geneva", "brusel", "amster", "warsaw", "athens", "buda", "buchst", "sofia",
+            "belgrn", "zagreb", "tallnn", "riga", "vilnus", "reykjv", "luxemb", "monaco",
+            "barcel", "seville", "milan", "naples", "venice", "floren", "munich", "hamburg",
+            "frank", "colone", "lyon", "marsle", "nice", "bordea", "manch", "birm",
+            "edinbr", "glasgw", "cardif", "liver", "leeds", "bristl", "oxford", "cambrd",
+            "denver", "dallas", "houston", "boston", "miami", "atlanta", "seattle", "portln",
+            "phoenix", "vegas", "austin", "nashvl", "chicago", "detroit", "phila", "dc",
+            "sf", "la", "san", "diego", "tampa", "orlando", "honolu", "anchor",
+            "vancvr", "toronto", "montrl", "calgary", "ottawa", "quebec", "halifax", "winnpg",
+            "mexico", "cancun", "bogota", "lima", "quito", "santiag", "buenos", "rio",
+            "sao", "medeln", "cartagn", "cusco", "havana", "nassau", "kingst", "punta",
+            "dubai", "doha", "riyadh", "muscat", "kuwait", "bahrin", "amman", "beirut",
+            "tel", "istanb", "ankara", "cairo", "marrkh", "fez", "tunis", "algier",
+            "nairobi", "captwn", "joburg", "lagos", "accra", "addis", "kampla", "dar",
+            "beijing", "shang", "hk", "taipei", "seoul", "osaka", "kyoto", "bangkok",
+            "phuket", "bali", "jakart", "kuala", "singap", "hanoi", "saigon", "manila",
+            "cebu", "mumbai", "delhi", "goa", "jaipur", "agra", "kolkat", "chennai",
+            "colombo", "kathmd", "dhaka", "yangon", "almaty", "tashkn", "baku", "tbilis",
+            "sydney", "melbrn", "brisbn", "perth", "adelad", "auckld", "wellin", "queenst",
+            "fiji", "tahiti", "samoa", "tonga", "guam", "darwin", "cairns", "hobart",
+            "davos", "aspen", "vale", "whistlr", "zermtt", "chamonx", "cortna", "innsbrk",
+            "stmorz", "verber", "courch", "meribel", "kitzbh", "lech", "gstaad", "banff",
+            "jasper", "lake", "moab", "sedona", "napa", "maui", "kauai", "oahu",
+            "cancn", "cabo", "playa", "tulum", "cozuml", "aruba", "curaco", "bonair",
+            "stluca", "barbd", "antgua", "usvi", "cayman", "turks", "belize", "bermda",
+            "azores", "canary", "balerc", "crete", "rhodes", "corfu", "myknos", "santrn",
+            "malta", "sicily", "sardna", "corsca", "capri", "ibiza", "madeira", "tenerif",
+            "dubrvn", "split", "hvar", "kotor", "budva", "ohrid", "plovdv", "brasov",
+            "salzbg", "hallst", "bruges", "ghent", "porto", "sintra", "toledo", "granda",
+            "sevill2", "rotrdm", "delft", "bath", "york", "chester", "invrs", "galway"
+        ],
+        "service": [
+            "flight", "hotel", "hostel", "resort", "villa", "cabin", "lodge", "motel",
+            "inn", "camp", "glampo", "airbnb", "rental", "lease", "sublet", "share",
+            "cruise", "ferry", "yacht", "boat", "sail", "canoe", "kayak", "raft",
+            "train", "rail", "metro", "tram", "bus", "coach", "shuttl", "taxi",
+            "uber", "lyft", "limo", "car", "van", "suv", "jeep", "bike",
+            "scootr", "moped", "segway", "tuk", "ricksh", "horse", "camel", "donkey",
+            "tour", "guide", "trek", "hike", "climb", "dive", "snorkl", "surf",
+            "ski", "board", "skate", "zip", "bungee", "glide", "jump", "fly",
+            "ballon", "copter", "seapl", "safari", "game", "whale", "bird", "fish",
+            "hunt", "forage", "cook", "taste", "wine", "brew", "spirit", "coffee",
+            "spa", "yoga", "pilate", "medtat", "retret", "detox", "fast", "healer",
+            "massag", "facial", "sauna", "steam", "pool", "beach", "lake", "river",
+            "park", "garden", "zoo", "museum", "palace", "castle", "fort", "ruin",
+            "temple", "church", "mosque", "shrine", "market", "bazaar", "mall", "shop",
+            "theatr", "cinema", "opera", "ballet", "circus", "fest", "carnvl", "parade",
+            "concrt", "club", "lounge", "rftop", "terrac", "patio", "deck", "pier"
+        ],
+        "type": [
+            "budget", "cheap", "deal", "sale", "promo", "offer", "disc", "free",
+            "basic", "stand", "comfy", "premium", "deluxe", "luxury", "elite", "vip",
+            "single", "double", "twin", "triple", "quad", "suite", "studio", "apt",
+            "one", "two", "three", "four", "five", "six", "seven", "eight",
+            "night", "day", "week", "biweek", "month", "season", "annual", "flex",
+            "fixed", "open", "round", "oneway", "nonstop", "direct", "connct", "multi",
+            "early", "late", "red", "peak", "off", "mid", "last", "first",
+            "group", "family", "couple", "solo", "corp", "team", "party", "event",
+            "local", "nearby", "city", "suburb", "rural", "remote", "island", "coast",
+            "mount", "valley", "forest", "desert", "lake2", "river2", "beach2", "jungle",
+            "indoor", "outdor", "guided", "self", "privat", "shared", "custom", "set",
+            "mornin", "aftrn", "evenin", "sunset", "sunris", "full", "half", "brief",
+            "quick", "slow", "fast2", "rush", "calm", "quiet", "lively", "wild",
+            "safe", "advent", "extrem", "gentle", "tough", "easy", "medium", "hard",
+            "new", "classc", "modern", "retro", "vintge", "rustic", "boho", "glam",
+            "eco", "green", "sustain", "carbon", "local2", "organic", "fair", "ethical"
+        ]
+    },
+    "min_label": 8,
+    "max_label": 22
+}

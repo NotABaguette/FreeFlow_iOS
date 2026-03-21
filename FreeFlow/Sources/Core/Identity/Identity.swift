@@ -36,7 +36,7 @@ public struct Identity: Codable {
 }
 
 /// A known contact
-public struct Contact: Codable, Identifiable {
+public struct Contact: Codable, Identifiable, Hashable {
     public var id: String { fingerprintHex }
     public let displayName: String
     public let publicKey: [UInt8]    // 32 bytes

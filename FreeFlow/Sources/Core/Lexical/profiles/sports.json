@@ -1,0 +1,88 @@
+{
+    "id": "sports",
+    "category": "Sports results",
+    "templates": [
+        {
+            "separator": "-",
+            "slots": [
+                {"word_list": "league", "bits": 8},
+                {"word_list": "event", "bits": 7},
+                {"word_list": "status", "bits": 7}
+            ]
+        }
+    ],
+    "word_lists": {
+        "league": [
+            "nfl", "nba", "mlb", "nhl", "mls", "epl", "laliga", "seriea",
+            "bunds", "ligue1", "eredv", "liga", "spfl", "allsvn", "rsl", "msl",
+            "csl", "jlgue", "kleag", "aleag", "isl", "afl", "nrl", "super",
+            "cfl", "xfl", "usfl", "aaf", "ncaa", "naia", "njcaa", "d1",
+            "d2", "d3", "fbs", "fcs", "big10", "big12", "sec", "acc",
+            "pac12", "aac", "mwc", "mac", "sunblt", "cusa", "wac", "ivy",
+            "wcc", "mvc", "a10", "socon", "caa", "maac", "meac", "swac",
+            "ovc", "bigsth", "bgsky", "nec", "hrzn", "ameast", "asun", "wac2",
+            "ucl", "uel", "uecl", "cwc", "afccl", "cafcl", "ofccl", "concl",
+            "copa", "librt", "sudamr", "recopa", "euroq", "wc", "euro", "afcon",
+            "asiancl", "goldcp", "oceana", "confed", "olym", "para", "comwlth", "asian",
+            "panam", "deaflm", "univ", "youth", "u21", "u20", "u19", "u17",
+            "u16", "u15", "womens", "wwc", "weuro", "wafcon", "wchamp", "wnba",
+            "nwsl", "wsl", "uswnt", "uwcl", "wleag", "sheblv", "wpsl", "nwhl",
+            "pwhl", "phf", "cwhl", "sdhl", "shl", "khl", "liiga", "del",
+            "nla", "ahl", "echl", "sphl", "ohl", "qmjhl", "whl", "ushl",
+            "atp", "wta", "itf", "slam", "davis", "billie", "laver", "united",
+            "pga", "lpga", "dpwtg", "liv", "korn", "symetr", "ryder", "presc",
+            "f1", "f2", "f3", "fe", "indy", "nascar", "cup", "xfnty",
+            "trucks", "imsa", "wec", "dtm", "supgt", "v8", "rally", "wrc",
+            "dakar", "baja", "lemans", "monza", "spa", "silvst", "monaco", "suzuka",
+            "ufc", "one", "belltr", "pfl", "rizin", "glory", "wbo", "wbc",
+            "wba", "ibf", "ring", "lineal", "bkfc", "karate", "judo", "taekwd",
+            "wrstlg", "fencng", "boxing", "mma", "bjj", "muay", "kickbx", "sambo",
+            "ipl", "bbl", "cpl", "psl", "bpl", "lpl", "sa20", "ilt20",
+            "odi", "t20", "test", "hundr", "blast", "marsh", "sheild", "trophy",
+            "snookr", "pool", "darts", "bowls", "crquet", "polo", "lacros", "hockey",
+            "rugby", "rugbyl", "sevens", "xv", "top14", "urc", "currie", "prshp",
+            "mlr", "sxr", "wnrl", "volley", "avp", "fivb", "hand", "watpol",
+            "swim", "dive", "synch", "surf", "ski", "biath", "luge", "bob",
+            "sled", "skate", "speed", "figur", "curl", "hockey2", "nordc", "alpine",
+            "cross", "frstyl", "board", "half", "slope", "mogul", "jump", "combo"
+        ],
+        "event": [
+            "match", "game", "round", "final", "semi", "qtr", "group", "play",
+            "heat", "qual", "seed", "draw", "draft", "pick", "trade", "sign",
+            "cut", "waive", "claim", "call", "send", "swap", "deal", "block",
+            "start", "end", "half", "over", "break", "pause", "resume", "delay",
+            "cancel", "post", "rain", "fog", "snow", "wind", "light", "dark",
+            "open", "close", "first", "last", "next", "prev", "home", "away",
+            "derby", "rival", "clash", "duel", "bout", "set", "leg", "tie",
+            "replay", "remtch", "extra", "pen", "shoot", "golden", "sudden", "wild",
+            "series", "sweep", "split", "clinch", "elim", "advanc", "defend", "title",
+            "trophy", "medal", "gold", "silver", "bronze", "ribbon", "banner", "flag",
+            "record", "best", "worst", "high", "low", "streak", "run", "skid",
+            "slump", "surge", "rally", "romp", "rout", "upset", "shock", "stun",
+            "thrill", "drama", "clutch", "choke", "epic", "classc", "legend", "iconic",
+            "debut", "retir", "return", "comebk", "induct", "honor", "tribut", "legacy",
+            "review", "recap", "prevw", "anlys", "report", "update", "flash", "alert",
+            "score", "goal", "assist", "save", "stop", "block2", "steal", "turnov"
+        ],
+        "status": [
+            "live", "final2", "sched", "delay", "post2", "cancel", "susp", "forfet",
+            "void", "tbd", "tba", "pend", "conf", "offcl", "unoff", "provs",
+            "active", "injurd", "doubt", "prob", "quest", "out", "day", "week",
+            "ir", "pup", "nfi", "susp2", "exempt", "waivu", "rest", "load",
+            "start2", "bench", "reserv", "squad", "roster", "lineup", "depth", "rotatn",
+            "form", "hot", "cold", "streak2", "prime", "peak", "slump2", "fade",
+            "run", "surge2", "clutch", "choker", "mvp", "allstr", "rookie", "veter",
+            "captan", "coach", "manage", "train", "ref", "umpire", "judge", "var",
+            "pen2", "card", "red", "yellow", "flag2", "foul", "tech", "eject",
+            "warn", "fine", "ban", "susp3", "appeal", "uphold", "overtm", "revers",
+            "first2", "second", "third", "fourth", "ot", "extra2", "pen3", "shoot2",
+            "lead", "trail", "tied", "ahead", "behind", "close2", "gap", "margin",
+            "blowt", "nail", "tight", "loose", "grind", "cruise", "coast", "hold",
+            "push", "pull", "rally2", "mount", "fold", "crack", "break2", "build",
+            "lock", "seal", "clinch2", "wrap", "ice", "salt", "extend", "cut",
+            "trim", "narrow", "widen", "shrink", "grow", "expand", "rise", "drop"
+        ]
+    },
+    "min_label": 8,
+    "max_label": 22
+}

@@ -5,14 +5,22 @@ public struct LexicalEncoder {
     public static let nonceBits = 10
 
     /// Encode payload → single domain label
+    /// Falls back to hex encoding if no lexical templates available
     public static func encode(payload: [UInt8], profile: LexicalProfile) throws -> String {
+        // Fallback: hex-encode if no templates available
+        if profile.templates.isEmpty {
+            return hexEncode(payload)
+        }
+
         let nonce = UInt16.random(in: 0..<(1 << nonceBits))
 
         let payloadBits = bytesToBits(payload)
         let requiredBits = payloadBits.count + nonceBits
 
+        // Try to find a template that fits; fall back to hex if none
         guard let template = profile.templates.first(where: { $0.totalBits >= requiredBits }) else {
-            throw FFError.payloadTooLarge
+            // Payload too large for lexical encoding — use hex fallback
+            return hexEncode(payload)
         }
 
         let templateBits = template.totalBits
@@ -44,6 +52,21 @@ public struct LexicalEncoder {
     public static func encodeQuery(payload: [UInt8], domain: String, profile: LexicalProfile) throws -> String {
         let label = try encode(payload: payload, profile: profile)
         return label + "." + domain
+    }
+
+    /// Hex-encoded fallback — less stealthy but always works
+    /// Splits into DNS-safe labels (max 63 chars each)
+    private static func hexEncode(_ payload: [UInt8]) -> String {
+        let hex = payload.map { String(format: "%02x", $0) }.joined()
+        // Split into chunks of 60 chars (DNS label limit is 63)
+        var labels = [String]()
+        var i = hex.startIndex
+        while i < hex.endIndex {
+            let end = hex.index(i, offsetBy: 60, limitedBy: hex.endIndex) ?? hex.endIndex
+            labels.append(String(hex[i..<end]))
+            i = end
+        }
+        return labels.joined(separator: ".")
     }
 }
 

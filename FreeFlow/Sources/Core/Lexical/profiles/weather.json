@@ -1,0 +1,88 @@
+{
+    "id": "weather",
+    "category": "Weather services",
+    "templates": [
+        {
+            "separator": "-",
+            "slots": [
+                {"word_list": "location", "bits": 8},
+                {"word_list": "forecast", "bits": 7},
+                {"word_list": "condition", "bits": 7}
+            ]
+        }
+    ],
+    "word_lists": {
+        "location": [
+            "nyc", "london", "paris", "tokyo", "berlin", "madrid", "rome", "moscow",
+            "beijing", "seoul", "mumbai", "dubai", "sydney", "toronto", "mexico", "cairo",
+            "lagos", "lima", "bogota", "santiag", "buenos", "rio", "sao", "lisbon",
+            "vienna", "warsaw", "prague", "buda", "athens", "dublin", "oslo", "stock",
+            "copen", "helsin", "zurich", "geneva", "brusel", "amster", "hamburg", "munich",
+            "frank", "milan", "naples", "barcel", "seville", "lyon", "mars", "nice",
+            "manch", "birm", "liver", "edinbr", "glasgw", "cardif", "belfast", "leeds",
+            "denver", "dallas", "houston", "boston", "miami", "atlanta", "seattle", "portlnd",
+            "phoenix", "vegas", "austin", "nashvl", "detroit", "chicago", "phila", "dc",
+            "sf", "la", "san", "oakland", "tampa", "orlando", "raleigh", "charlte",
+            "memphis", "richmnd", "jacksvl", "tucson", "mesa", "omaha", "tulsa", "fresno",
+            "sacra", "honolu", "anchor", "juneau", "helena", "boise", "salem", "olymp",
+            "pierre", "topeka", "concord", "trenton", "dover", "reno", "fargo", "helena2",
+            "billin", "jackson", "little", "mobile", "albany", "buffalo", "roches", "hartfrd",
+            "provid", "newark", "camden", "wichita", "lincoln", "des", "madi", "lansing",
+            "helena3", "spring", "columbs", "indy", "minn", "stpaul", "stloui", "kc",
+            "vancvr", "calgary", "edmontn", "ottawa", "montrel", "quebec", "halifax", "winipg",
+            "regina", "victora", "kelowna", "thunder", "sudbury", "london2", "hamiltn", "kitchnr",
+            "shang", "guangz", "shenzn", "chengdu", "wuhan", "xian", "hangzh", "nanjng",
+            "tianjn", "chongq", "dalian", "qingda", "harbin", "jinan", "fuzhou", "xiamen",
+            "osaka", "nagoya", "sappor", "fukuok", "kobe", "kyoto", "yokohm", "sendai",
+            "busan", "inchon", "daegu", "daejn", "gwangj", "ulsan", "jeju", "suwon",
+            "taipei", "taicng", "kaohsg", "tainan", "hsinch", "keelung", "manila", "cebu",
+            "hanoi", "saigon", "danang", "bangkk", "chimai", "phuket", "kuala", "penang",
+            "jakart", "bali", "suraby", "bandng", "medan", "delhi", "kolkat", "chennai",
+            "hydera", "pune", "ahmed", "jaipur", "lucknw", "karach", "lahore", "dhaka",
+            "colombo", "yangon", "almaty", "tashkn", "bishkk", "baku", "tbilis", "yervn",
+            "tehran", "baghdd", "riyadh", "jeddah", "mecca", "doha", "muscat", "kuwait",
+            "amman", "beirut", "damasc", "tel", "istanb", "ankara", "izmir", "antalya",
+            "nairobi", "addis", "kampla", "dar", "kigali", "maputo", "lusaka", "harare",
+            "accra", "abuja", "dakar", "rabat", "tunis", "algier", "tripol", "khart",
+            "cape", "joburg", "durban", "pretora", "auckld", "welling", "brisbn", "melbrn"
+        ],
+        "forecast": [
+            "hourly", "daily", "weekly", "monthl", "annual", "season", "live", "now",
+            "today", "night", "dawn", "dusk", "noon", "mornin", "evenin", "midday",
+            "sunset", "sunris", "early", "late", "curr", "next", "prev", "coming",
+            "extend", "short", "long", "mid", "range", "out", "look", "cast",
+            "warn", "watch", "alert", "advis", "update", "report", "brief", "summ",
+            "detail", "map", "chart", "graph", "radar", "satel", "model", "pred",
+            "trend", "hist", "record", "avg", "normal", "anom", "extrem", "peak",
+            "low2", "high2", "mean", "median", "max", "min", "range2", "span",
+            "delta", "change", "shift", "swing", "surge", "drop", "rise", "dip",
+            "spike", "plunge", "climb", "fall", "steady", "stable", "flux", "cycle",
+            "phase", "front", "system", "mass", "cell", "band", "zone", "ridge",
+            "trough", "vortex", "jet", "stream", "flow", "drift", "wave", "pulse",
+            "burst", "squall", "gust", "lull", "calm", "break", "onset", "end",
+            "start", "finish", "open", "close", "first", "last", "final", "init",
+            "base", "top", "floor", "ceil", "cap", "limit", "thresh", "bound",
+            "margin", "buffer", "offset", "adjust", "corr", "bias", "raw", "proc"
+        ],
+        "condition": [
+            "sunny", "cloudy", "rain", "snow", "sleet", "hail", "fog", "mist",
+            "haze", "smog", "dust", "sand", "smoke", "clear", "fair", "overc",
+            "partly", "mostly", "light", "heavy", "mod", "sever", "intens", "mild",
+            "warm", "hot", "cold", "cool", "freez", "frost", "ice", "thaw",
+            "dry", "humid", "damp", "wet", "moist", "arid", "muggy", "sultry",
+            "windy", "gusty", "breezy", "calm2", "still", "stormy", "turb", "squall",
+            "gale", "typhon", "cyclon", "torndo", "funnel", "spout", "burst2", "deluge",
+            "flood", "surge2", "tide", "swell", "wave2", "chop", "rough", "smooth",
+            "bolt", "strike", "flash", "rumble", "crack", "roll", "sheet", "fork",
+            "drizzl", "shower", "pour", "torrt", "sprnkl", "flurry", "blizrd", "whout",
+            "drifts", "pack", "glaze", "rime", "hoar", "black", "white", "grey",
+            "dark", "bright", "vivid", "pale", "dull", "glow", "shine", "gleam",
+            "dawn2", "dusk2", "twili", "aurora", "halo", "bow", "ring2", "corona",
+            "mirage", "inver", "convec", "advec", "radiat", "conden", "evap", "precip",
+            "accum", "runoff", "melt", "drift2", "settle", "lift", "lower", "rise2",
+            "build", "thin", "thick", "dense", "sparse", "patch", "sctrd", "wide2"
+        ]
+    },
+    "min_label": 8,
+    "max_label": 22
+}

