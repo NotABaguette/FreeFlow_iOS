@@ -45,7 +45,7 @@ public class FFConnection: ObservableObject {
             payload = QueryPayload(command: Command.ping.rawValue).toFrame()
         }
         onQuery?("PING cmd=0x07", "sending...", transport)
-        let response = try await queryOracle(payload: payload)
+        let response = try await checkErrorResponse(try await queryOracle(payload: payload))
         guard response.count >= 4 else { throw FFError.frameTooShort(response.count) }
         let serverTime = UInt32(response[0]) << 24 | UInt32(response[1]) << 16 |
                          UInt32(response[2]) << 8 | UInt32(response[3])
@@ -85,7 +85,7 @@ public class FFConnection: ObservableObject {
             let chunkHex = chunk.map { String(format: "%02x", $0) }.joined()
             onQuery?("HELLO chunk=\(i)/4 nonce=\(helloNonce) data=\(chunkHex)", "sending \(frame.count)B frame...", transport)
 
-            let response = try await queryOracle(payload: frame)
+            let response = try await checkErrorResponse(try await queryOracle(payload: frame))
 
             if i == 3 {
                 let sharedSecret = try ephemeral.sharedSecret(with: oraclePublicKey)
@@ -117,34 +117,97 @@ public class FFConnection: ObservableObject {
 
     // MARK: - REGISTER
 
-    /// Register persistent identity with the session.
-    /// Must be called after connect(). Oracle expects Data = publicKey(32 bytes only).
+    /// Register persistent identity with the session (§4.4).
+    /// Fragmented into 3 queries for proquint (each ≤20 bytes).
+    /// Single query for hex encoding (40 bytes = 2 labels).
     /// Oracle computes fingerprint = SHA256(pubkey)[0:8] itself.
+    /// Client MUST verify returned fingerprint matches local computation.
     public func register() async throws {
         guard let sess = session else { throw FFError.noSession }
-        let seq = sess.nextSeqNo()
-        let token = sess.token(for: seq)
 
-        // Go: Data = id.PublicKey[:] — just the 32-byte public key
-        // Oracle computes fingerprint from this
-        let frame = QueryPayload(
-            command: 0x08, // CmdREGISTER
-            seqNo: UInt8(seq & 0xFF),
-            fragIndex: 0,
-            fragTotal: 1,
-            sessionToken: token,
-            data: identity.publicKey // 32 bytes only, no fingerprint
-        ).toFrame()
+        let pubkey = identity.publicKey // 32 bytes
 
-        onQuery?("REGISTER pubkey=\(identity.publicKey.prefix(4).map { String(format: "%02x", $0) }.joined())...", "sending \(frame.count)B frame...", transport)
-        let response = try await queryOracle(payload: frame)
+        if encoding == .proquint {
+            // §4.4 Fragmented format: 3 queries, each ≤20 bytes
+            // Fragment 0: pubkey[0..11]  (12 bytes data, frame=20)
+            // Fragment 1: pubkey[12..23] (12 bytes data, frame=20)
+            // Fragment 2: pubkey[24..31] (8 bytes data, frame=16)
+            let chunks: [[UInt8]] = [
+                Array(pubkey[0..<12]),
+                Array(pubkey[12..<24]),
+                Array(pubkey[24..<32]),
+            ]
 
-        if response.count >= 8 {
-            let fpHex = response.prefix(8).map { String(format: "%02x", $0) }.joined()
-            onQuery?("REGISTER", "OK fingerprint=\(fpHex)", transport)
+            for (i, chunk) in chunks.enumerated() {
+                let seq = sess.nextSeqNo()
+                let token = sess.token(for: seq)
+
+                let frame = QueryPayload(
+                    command: 0x08,
+                    seqNo: UInt8(seq & 0xFF),
+                    fragIndex: UInt8(i),
+                    fragTotal: UInt8(chunks.count),
+                    sessionToken: token,
+                    data: chunk
+                ).toFrame()
+
+                onQuery?("REGISTER frag=\(i+1)/\(chunks.count) \(chunk.count)B", "sending \(frame.count)B frame...", transport)
+                let response = try await checkErrorResponse(try await queryOracle(payload: frame))
+
+                if i == chunks.count - 1 {
+                    verifyRegisterResponse(response)
+                }
+
+                if i < chunks.count - 1 {
+                    try await Task.sleep(nanoseconds: UInt64(optimalDelay * 1_000_000_000))
+                }
+            }
         } else {
-            onQuery?("REGISTER", "response=\(response.count)B", transport)
+            // Single-query format: 40 bytes (header=8 + pubkey=32)
+            let seq = sess.nextSeqNo()
+            let token = sess.token(for: seq)
+
+            let frame = QueryPayload(
+                command: 0x08,
+                seqNo: UInt8(seq & 0xFF),
+                fragIndex: 0,
+                fragTotal: 1,
+                sessionToken: token,
+                data: pubkey
+            ).toFrame()
+
+            onQuery?("REGISTER single-query 40B", "sending...", transport)
+            let response = try await checkErrorResponse(try await queryOracle(payload: frame))
+            verifyRegisterResponse(response)
         }
+    }
+
+    /// Verify Oracle-returned fingerprint matches local computation (§4.4)
+    private func verifyRegisterResponse(_ response: [UInt8]) {
+        if response.count >= 8 {
+            let oracleFP = response.prefix(8).map { String(format: "%02x", $0) }.joined()
+            let localFP = identity.fingerprintHex
+            if oracleFP == localFP {
+                onQuery?("REGISTER", "OK — fingerprint verified: \(oracleFP)", transport)
+            } else {
+                onQuery?("REGISTER", "WARNING — fingerprint mismatch! Oracle=\(oracleFP) Local=\(localFP)", transport)
+            }
+        }
+    }
+
+    /// Check for 0xFF error responses from Oracle (§3.2)
+    private func checkErrorResponse(_ response: [UInt8]) throws -> [UInt8] {
+        if response.count >= 2 && response[0] == 0xFF {
+            let code = response[1]
+            let errorNames: [UInt8: String] = [
+                0x00: "Unknown", 0x01: "NoSession", 0x02: "InvalidToken",
+                0x03: "RateLimit", 0x04: "Malformed", 0x05: "NoBulletin",
+                0x06: "NoMessage", 0x07: "HelloTimeout", 0x08: "HelloConflict"
+            ]
+            let name = errorNames[code] ?? "0x\(String(format: "%02x", code))"
+            throw FFError.helloFailed("Oracle error: \(name)")
+        }
+        return response
     }
 
     // MARK: - GET BULLETIN
@@ -161,7 +224,7 @@ public class FFConnection: ObservableObject {
         }
 
         onQuery?("GET_BULLETIN lastID=\(lastSeenID)", "sending...", transport)
-        let response = try await queryOracle(payload: frame)
+        let response = try await checkErrorResponse(try await queryOracle(payload: frame))
         onQuery?("GET_BULLETIN", "response=\(response.count)B", transport)
         return response
     }
@@ -200,8 +263,13 @@ public class FFConnection: ObservableObject {
             let token = sess.token(for: seq)
 
             // Data = [recipientFP(8)] + [ciphertext_chunk] for EVERY fragment
+            // §1.2.1: frames MUST have even byte length for proquint
             var data = fpBytes  // 8 bytes fingerprint
             data.append(contentsOf: ctChunk)
+            // Ensure total frame (8 header + data) is even
+            if (8 + data.count) % 2 != 0 {
+                data.append(0x00)
+            }
 
             let frame = QueryPayload(
                 command: Command.sendMsg.rawValue,
@@ -213,7 +281,7 @@ public class FFConnection: ObservableObject {
             ).toFrame()
 
             onQuery?("SEND_MSG frag=\(i+1)/\(ctFragments.count) to=\(recipientFP.prefix(8)) ct=\(ctChunk.count)B", "sending \(frame.count)B frame...", transport)
-            let response = try await queryOracle(payload: frame)
+            let response = try await checkErrorResponse(try await queryOracle(payload: frame))
             onQuery?("SEND_MSG frag=\(i+1)/\(ctFragments.count)", "ACK \(response.count)B", transport)
         }
         return ctFragments.count
@@ -241,7 +309,7 @@ public class FFConnection: ObservableObject {
         ).toFrame()
 
         onQuery?("GET_MSG CHECK", "sending...", transport)
-        let checkResp = try await queryOracle(payload: checkFrame)
+        let checkResp = try await checkErrorResponse(try await queryOracle(payload: checkFrame))
 
         // Response: [0x00,...] = no messages, [0x01, senderFP(4), lenHi, lenLo, 0] = has message
         guard checkResp.count >= 1 && checkResp[0] == 0x01 else {
@@ -269,7 +337,7 @@ public class FFConnection: ObservableObject {
             ).toFrame()
 
             onQuery?("GET_MSG FETCH chunk=\(chunkIdx)", "sending...", transport)
-            let fetchResp = try await queryOracle(payload: fetchFrame)
+            let fetchResp = try await checkErrorResponse(try await queryOracle(payload: fetchFrame))
             blob.append(contentsOf: fetchResp)
             onQuery?("GET_MSG FETCH chunk=\(chunkIdx)", "got \(fetchResp.count)B", transport)
         }
@@ -287,7 +355,7 @@ public class FFConnection: ObservableObject {
         ).toFrame()
 
         onQuery?("GET_MSG ACK", "sending...", transport)
-        _ = try await queryOracle(payload: ackFrame)
+        _ = try await checkErrorResponse(try await queryOracle(payload: ackFrame))
         onQuery?("GET_MSG ACK", "delivered", transport)
 
         // Trim blob to actual totalLen (Go: blob = blob[:totalLen])
@@ -318,10 +386,7 @@ public class FFConnection: ObservableObject {
     // MARK: - DISCOVER
 
     public func discover() async throws {
-        guard let sess = session else { throw FFError.noSession }
-        let seq = sess.nextSeqNo()
-        let token = sess.token(for: seq)
-
+        // §3.1: DISCOVER does NOT require a session
         let payload: [UInt8]
         if encoding == .lexical {
             payload = [Command.discover.rawValue]
@@ -330,11 +395,12 @@ public class FFConnection: ObservableObject {
         }
 
         onQuery?("DISCOVER", "sending...", transport)
-        let response = try await queryOracle(payload: payload)
+        let response = try await checkErrorResponse(try await queryOracle(payload: payload))
 
         if response.count >= 16 {
+            let sKey = session?.keyBytes ?? [UInt8](repeating: 0, count: 32)
             domainManager.updateEpoch(encryptedSeed: Array(response.prefix(16)),
-                                       sessionKey: sess.keyBytes)
+                                       sessionKey: sKey)
             onQuery?("DISCOVER", "epoch_seed updated, epoch=\(domainManager.epochNumber)", transport)
         } else {
             onQuery?("DISCOVER", "response too short (\(response.count)B)", transport)
